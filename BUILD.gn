@@ -1,0 +1,309 @@
+#----------------------------------------------------
+# Author: stoneliu@boyaa.com
+# Time  : Tue 27 Mar 2018 23:56:06 CST
+#----------------------------------------------------
+
+# project: http://sourceforge.net/projects/opencore-amr
+# version: 0.1.5
+# cflags:  https://android.googlesource.com/platform/external/opencore/+/froyo/Config.mk
+# rfc:     http://www.ietf.org/rfc/rfc3267.txt?number=3267
+
+config("amr_config") {
+  include_dirs = [
+    "oscl",
+    "opencore-amrnb",
+    "opencore-amrwb",
+    "amr_wb/dec/include",
+    "common/dec/include",
+    "amr_nb/enc/include",
+    "amr_nb/common/include",
+    "amr_nb/dec/include",
+    "amr_wb/dec/src",
+    "amr_nb/enc/src",
+    "amr_nb/common/src",
+    "amr_nb/dec/src",
+  ]
+
+  if (is_win) {
+    cflags = [
+      "/wd4047",
+      "/wd4310",
+      "/wd4701",
+      "/wd4005",
+    ]
+  } else {
+    cflags = [
+      "-Wno-unused-const-variable",
+      "-Wno-sign-compare",
+      "-Wno-delete-incomplete",
+      "-Wno-deprecated-register",
+      "-Wno-null-dereference",
+      "-Wno-non-virtual-dtor",
+    ]
+  }
+
+  defines = [
+    "ENABLE_SHAREDFD_PLAYBACK",
+    "_LARGEFILE_SOURCE",
+    "_LARGEFILE64_SOURCE",
+    "_FILE_OFFSET_BITS=64",
+    "USE_CML2_CONFIG",
+  ]
+}
+
+config("opencore_amr_dependent_config") {
+  include_dirs = [ "." ]
+}
+
+static_library("amr_nb_common") {
+  sources = [
+    "amr_nb/common/src/extract_h.cpp",
+    "amr_nb/common/src/sqrt_l.cpp",
+    "amr_nb/common/src/inv_sqrt_tbl.cpp",
+    "amr_nb/common/src/gmed_n.cpp",
+    "amr_nb/common/src/grid_tbl.cpp",
+    "amr_nb/common/src/gains_tbl.cpp",
+    "amr_nb/common/src/bits2prm.cpp",
+    "amr_nb/common/src/copy.cpp",
+    "amr_nb/common/src/q_plsf_3_tbl.cpp",
+    "amr_nb/common/src/int_lpc.cpp",
+    "amr_nb/common/src/extract_l.cpp",
+    "amr_nb/common/src/lsp_lsf_tbl.cpp",
+    "amr_nb/common/src/window_tab.cpp",
+    "amr_nb/common/src/norm_s.cpp",
+    "amr_nb/common/src/lsp_lsf.cpp",
+    "amr_nb/common/src/residu.cpp",
+    "amr_nb/common/src/log2_tbl.cpp",
+    "amr_nb/common/src/div_32.cpp",
+    "amr_nb/common/src/inv_sqrt.cpp",
+    "amr_nb/common/src/shr.cpp",
+    "amr_nb/common/src/pow2.cpp",
+    "amr_nb/common/src/l_abs.cpp",
+    "amr_nb/common/src/lsp_tab.cpp",
+    "amr_nb/common/src/reorder.cpp",
+    "amr_nb/common/src/shr_r.cpp",
+    "amr_nb/common/src/log2_norm.cpp",
+    "amr_nb/common/src/mult_r.cpp",
+    "amr_nb/common/src/weight_a.cpp",
+    "amr_nb/common/src/lsfwt.cpp",
+    "amr_nb/common/src/lsp_az.cpp",
+    "amr_nb/common/src/l_shr_r.cpp",
+    "amr_nb/common/src/sqrt_l_tbl.cpp",
+    "amr_nb/common/src/q_plsf.cpp",
+    "amr_nb/common/src/q_plsf_5_tbl.cpp",
+    "amr_nb/common/src/qua_gain_tbl.cpp",
+    "amr_nb/common/src/negate.cpp",
+    "amr_nb/common/src/ph_disp_tab.cpp",
+    "amr_nb/common/src/pred_lt.cpp",
+    "amr_nb/common/src/gc_pred.cpp",
+    "amr_nb/common/src/round.cpp",
+    "amr_nb/common/src/log2.cpp",
+    "amr_nb/common/src/gray_tbl.cpp",
+    "amr_nb/common/src/syn_filt.cpp",
+    "amr_nb/common/src/div_s.cpp",
+    "amr_nb/common/src/az_lsp.cpp",
+    #"amr_nb/common/src/vad1.cpp",
+    "amr_nb/common/src/lsp.cpp",
+    #"amr_nb/common/src/vad2.cpp",
+    "amr_nb/common/src/get_const_tbls.cpp",
+    "amr_nb/common/src/c2_9pf_tab.cpp",
+    "amr_nb/common/src/q_plsf_3.cpp",
+    "amr_nb/common/src/l_deposit_l.cpp",
+    "amr_nb/common/src/add.cpp",
+    "amr_nb/common/src/q_plsf_5.cpp",
+    #"amr_nb/common/src/r_fft.cpp",
+    "amr_nb/common/src/bitreorder_tab.cpp",
+    "amr_nb/common/src/set_zero.cpp",
+    "amr_nb/common/src/norm_l.cpp",
+    "amr_nb/common/src/pow2_tbl.cpp",
+    "amr_nb/common/src/bitno_tab.cpp",
+    "amr_nb/common/src/l_deposit_h.cpp",
+    "amr_nb/common/src/overflow_tbl.cpp",
+    "amr_nb/common/src/sub.cpp",
+  ]
+
+  configs += [ ":amr_config" ]
+}
+
+static_library("amr_nb_dec") {
+  sources = [
+    "amr_nb/dec/src/a_refl.cpp",
+    "amr_nb/dec/src/d_plsf_3.cpp",
+    "amr_nb/dec/src/agc.cpp",
+    "amr_nb/dec/src/dec_lag6.cpp",
+    "amr_nb/dec/src/ex_ctrl.cpp",
+    "amr_nb/dec/src/d8_31pf.cpp",
+    "amr_nb/dec/src/dec_lag3.cpp",
+    "amr_nb/dec/src/d_plsf_5.cpp",
+    "amr_nb/dec/src/bgnscd.cpp",
+    "amr_nb/dec/src/d2_11pf.cpp",
+    "amr_nb/dec/src/d1035pf.cpp",
+    "amr_nb/dec/src/dec_amr.cpp",
+    "amr_nb/dec/src/lsp_avg.cpp",
+    "amr_nb/dec/src/qgain475_tab.cpp",
+    "amr_nb/dec/src/d3_14pf.cpp",
+    "amr_nb/dec/src/wmf_to_ets.cpp",
+    "amr_nb/dec/src/c_g_aver.cpp",
+    #"amr_nb/dec/src/pvgsmamrdecoder.cpp",
+    "amr_nb/dec/src/dec_input_format_tab.cpp",
+    "amr_nb/dec/src/d4_17pf.cpp",
+    "amr_nb/dec/src/d2_9pf.cpp",
+    #"amr_nb/dec/src/decoder_gsm_amr.cpp",
+    "amr_nb/dec/src/d_gain_c.cpp",
+    "amr_nb/dec/src/d_gain_p.cpp",
+    "amr_nb/dec/src/sp_dec.cpp",
+    "amr_nb/dec/src/ec_gains.cpp",
+    "amr_nb/dec/src/d_plsf.cpp",
+    "amr_nb/dec/src/b_cn_cod.cpp",
+    "amr_nb/dec/src/pstfilt.cpp",
+    "amr_nb/dec/src/if2_to_ets.cpp",
+    "amr_nb/dec/src/dec_gain.cpp",
+    "amr_nb/dec/src/ph_disp.cpp",
+    "amr_nb/dec/src/int_lsf.cpp",
+    "amr_nb/dec/src/dtx_dec.cpp",
+    "amr_nb/dec/src/amrdecode.cpp",
+    "amr_nb/dec/src/preemph.cpp",
+    "amr_nb/dec/src/post_pro.cpp",
+  ]
+
+  configs += [ ":amr_config" ]
+  deps = [ ":amr_nb_common" ]
+}
+
+static_library("amr_nb_enc") {
+  sources = [
+    "amr_nb/enc/src/g_pitch.cpp",
+    "amr_nb/enc/src/spreproc.cpp",
+    "amr_nb/enc/src/l_extract.cpp",
+    "amr_nb/enc/src/c4_17pf.cpp",
+    "amr_nb/enc/src/ets_to_wmf.cpp",
+    "amr_nb/enc/src/inter_36.cpp",
+    "amr_nb/enc/src/s10_8pf.cpp",
+    "amr_nb/enc/src/autocorr.cpp",
+    "amr_nb/enc/src/convolve.cpp",
+    "amr_nb/enc/src/ets_to_if2.cpp",
+    "amr_nb/enc/src/cl_ltp.cpp",
+    "amr_nb/enc/src/g_adapt.cpp",
+    "amr_nb/enc/src/pitch_ol.cpp",
+    "amr_nb/enc/src/c3_14pf.cpp",
+    "amr_nb/enc/src/cor_h_x.cpp",
+    "amr_nb/enc/src/pitch_fr.cpp",
+    "amr_nb/enc/src/g_code.cpp",
+    "amr_nb/enc/src/div_32.cpp",
+    "amr_nb/enc/src/qgain795.cpp",
+    "amr_nb/enc/src/l_abs.cpp",
+    "amr_nb/enc/src/c1035pf.cpp",
+    "amr_nb/enc/src/c2_11pf.cpp",
+    #"amr_nb/enc/src/gsmamr_encoder_wrapper.cpp",
+    "amr_nb/enc/src/ol_ltp.cpp",
+    "amr_nb/enc/src/q_gain_c.cpp",
+    "amr_nb/enc/src/inter_36_tab.cpp",
+    "amr_nb/enc/src/q_gain_p.cpp",
+    "amr_nb/enc/src/lpc.cpp",
+    "amr_nb/enc/src/levinson.cpp",
+    "amr_nb/enc/src/prm2bits.cpp",
+    "amr_nb/enc/src/calc_en.cpp",
+    "amr_nb/enc/src/c8_31pf.cpp",
+    "amr_nb/enc/src/qua_gain.cpp",
+    "amr_nb/enc/src/sp_enc.cpp",
+    "amr_nb/enc/src/cor_h_x2.cpp",
+    "amr_nb/enc/src/amrencode.cpp",
+    "amr_nb/enc/src/sid_sync.cpp",
+    "amr_nb/enc/src/enc_lag6.cpp",
+    "amr_nb/enc/src/ton_stab.cpp",
+    "amr_nb/enc/src/vad1.cpp",
+    "amr_nb/enc/src/cod_amr.cpp",
+    "amr_nb/enc/src/lag_wind.cpp",
+    "amr_nb/enc/src/cor_h.cpp",
+    "amr_nb/enc/src/lag_wind_tab.cpp",
+    "amr_nb/enc/src/pre_proc.cpp",
+    "amr_nb/enc/src/cbsearch.cpp",
+    "amr_nb/enc/src/hp_max.cpp",
+    "amr_nb/enc/src/enc_lag3.cpp",
+    "amr_nb/enc/src/qgain475.cpp",
+    "amr_nb/enc/src/p_ol_wgh.cpp",
+    "amr_nb/enc/src/corrwght_tab.cpp",
+    "amr_nb/enc/src/enc_output_format_tab.cpp",
+    "amr_nb/enc/src/dtx_enc.cpp",
+    "amr_nb/enc/src/spstproc.cpp",
+    "amr_nb/enc/src/l_negate.cpp",
+    "amr_nb/enc/src/set_sign.cpp",
+    "amr_nb/enc/src/c2_9pf.cpp",
+    "amr_nb/enc/src/lflg_upd.cpp",
+    "amr_nb/enc/src/gain_q.cpp",
+    "amr_nb/enc/src/l_comp.cpp",
+    "amr_nb/enc/src/calc_cor.cpp",
+    "amr_nb/enc/src/pre_big.cpp",
+  ]
+
+  configs += [ ":amr_config" ]
+  deps = [ ":amr_nb_common" ]
+}
+
+static_library("amr_wb_dec") {
+  sources = [
+    "amr_wb/dec/src/isf_extrapolation.cpp",
+    "amr_wb/dec/src/agc2_amr_wb.cpp",
+    "amr_wb/dec/src/qpisf_2s.cpp",
+    "amr_wb/dec/src/dtx_decoder_amr_wb.cpp",
+    "amr_wb/dec/src/noise_gen_amrwb.cpp",
+    "amr_wb/dec/src/low_pass_filt_7k.cpp",
+    "amr_wb/dec/src/q_gain2_tab.cpp",
+    "amr_wb/dec/src/qisf_ns_tab.cpp",
+    "amr_wb/dec/src/weight_amrwb_lpc.cpp",
+    "amr_wb/dec/src/normalize_amr_wb.cpp",
+    "amr_wb/dec/src/scale_signal.cpp",
+    "amr_wb/dec/src/pvamrwbdecoder.cpp",
+    "amr_wb/dec/src/lagconceal.cpp",
+    "amr_wb/dec/src/highpass_400hz_at_12k8.cpp",
+    "amr_wb/dec/src/dec_gain2_amr_wb.cpp",
+    "amr_wb/dec/src/dec_acelp_2p_in_64.cpp",
+    "amr_wb/dec/src/dec_alg_codebook.cpp",
+    "amr_wb/dec/src/mime_io.cpp",
+    "amr_wb/dec/src/voice_factor.cpp",
+    "amr_wb/dec/src/wb_syn_filt.cpp",
+    "amr_wb/dec/src/deemphasis_32.cpp",
+    "amr_wb/dec/src/get_amr_wb_bits.cpp",
+    "amr_wb/dec/src/qisf_ns.cpp",
+    #"amr_wb/dec/src/decoder_amr_wb.cpp",
+    "amr_wb/dec/src/band_pass_6k_7k.cpp",
+    "amr_wb/dec/src/isp_az.cpp",
+    "amr_wb/dec/src/dec_acelp_4p_in_64.cpp",
+    "amr_wb/dec/src/pred_lt4.cpp",
+    "amr_wb/dec/src/pit_shrp.cpp",
+    "amr_wb/dec/src/isp_isf.cpp",
+    "amr_wb/dec/src/homing_amr_wb_dec.cpp",
+    "amr_wb/dec/src/highpass_50hz_at_12k8.cpp",
+    "amr_wb/dec/src/qpisf_2s_tab.cpp",
+    "amr_wb/dec/src/preemph_amrwb_dec.cpp",
+    "amr_wb/dec/src/synthesis_amr_wb.cpp",
+    "amr_wb/dec/src/oversamp_12k8_to_16k.cpp",
+    "amr_wb/dec/src/pvamrwb_math_op.cpp",
+    "amr_wb/dec/src/interpolate_isp.cpp",
+    "amr_wb/dec/src/phase_dispersion.cpp",
+    "amr_wb/dec/src/median5.cpp",
+  ]
+
+  configs += [ ":amr_config" ]
+}
+
+static_library("amr") {
+  sources = [
+    "opencore-amrnb/amrnb_wrapper.cpp",
+    "opencore-amrwb/amrwb_wrapper.cpp",
+  ]
+  deps = [
+    ":amr_nb_enc",
+    ":amr_nb_dec",
+    ":amr_wb_dec",
+  ]
+  configs += [ ":amr_config" ]
+  public_configs = [ ":opencore_amr_dependent_config" ]
+}
+
+executable("amr_enc_test") {
+  sources = [ "test/amrnb-enc.c" ]
+  configs += [ ":amr_config" ]
+  deps = [ ":amr" ]
+}
+
